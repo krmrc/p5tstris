@@ -6,10 +6,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "run-p start-compile start-run",
     "start-compile": "tsc --watch",
+    "build": "tsc",
     "start-run": "browser-sync start --server -w",
-    "deploy": "npm run build && gh-pages -d build --repo <url>"
+    "deploy": "npm run build && gh-pages -d build --repo https://github.com/krmrc/p5tstris/"
   },
-  "homepage": "https://github.com/",
+  "homepage": "https://krmrc.github.io/p5tstris",
   "devDependencies": {
     "@types/p5": "^0.9.1",
     "browser-sync": "^2.26.14",

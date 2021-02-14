@@ -9,6 +9,10 @@
     "rootDir": "./sketch/",
     "sourceMap": true,
     "sourceRoot": "./sketch/",
-    "target": "es2020"
+    "target": "es2018",
+    "lib": [
+      "es2018",
+      "DOM"
+    ]
   }
 }

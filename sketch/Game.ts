@@ -1,12 +1,17 @@
 class Game {
     mino: Mino;
+    hold: number;
     minoVx: number;
     minoDrop: boolean;
+    mino_hold: boolean;
+    holded: boolean;
     minoVr: number;
     field: Field;
     fc: number;
     rng: number;
     minos: Array<Mino>;
+    static readonly VISIBLE_NEXT: number = 5;
+
 
     constructor(rng?: number) {
         this.minoVx = 0;
@@ -22,13 +27,13 @@ class Game {
         this.minos = new Array<Mino>();
         this.rng_generate();
         this.mino = this.minos.shift();
+        this.hold = null;
+        this.holded = false;
     }
-    // static makeMino(): Mino {
-    //     return new Mino(7, 20, 0, floor(random(0, 7)));
-    // }
+
     private rng_next(): number { // XorShift32bit
         let y = this.rng;
-        console.log(y)
+        // console.log(y)
 
         y = y ^ (y << 13);
         y = y ^ (y >> 17);
@@ -53,7 +58,7 @@ class Game {
             }
 
             for (let i = 0; i < 7; i++) {
-                this.minos.push(new Mino(7, 20, 0, bag[i] + 1));
+                this.minos.push(new Mino(6, 20, 0, bag[i] + 1));
             }
         }
     }
@@ -62,9 +67,39 @@ class Game {
         return blocks.every(b => field.tileAt(b.x, b.y) === 0);
     }
 
+    drawNexts() {
+        for (let i = 0; i < Game.VISIBLE_NEXT; i++) {
+            let o = new Mino(18, 20 + (i * 4), 0, this.minos[i].shape).draw();
+        }
+    }
+    drawHold() {
+        if (this.hold !== null) {
+            let o = new Mino(-2.5, 20, 0, this.hold).draw()
+        }
+    }
+
     proc() {
+        // Hold
+        if (this.mino_hold) {
+            if (!this.holded) {
+                if (this.hold === null) {
+                    this.hold = this.mino.shape;
+                    this.mino = this.minos.shift();
+                    this.rng_generate();
+                } else {
+                    let tmp = new Mino(0, 0, 0, this.mino.shape);
+                    this.mino = new Mino(6, 20, 0, this.hold);
+                    this.hold = tmp.shape;
+                }
+                this.holded = true;
+            }
+            this.mino_hold = false;
+
+        }
+
         // 落下
-        if (this.minoDrop || this.fc % 20 === 19) {
+        //  || this.fc % 20 === 19
+        if (this.minoDrop) {
             let futureMino = this.mino.copy();
             futureMino.y += 1;
             if (Game.isMinoMovable(futureMino, this.field)) {
@@ -78,6 +113,7 @@ class Game {
                 // console.log("せっち");
                 this.mino = this.minos.shift();
                 this.rng_generate();
+                this.holded = false;
             }
             // 消去
             let line;
@@ -98,10 +134,26 @@ class Game {
         // 回転
         if (this.minoVr !== 0) {
             let futureMino = this.mino.copy();
-            futureMino.rot += this.minoVr;
-            if (Game.isMinoMovable(futureMino, this.field)) {
-                this.mino.rot += this.minoVr;
+            let can_rotate = false;
+            futureMino.rot = (futureMino.rot + this.minoVr + 400) % 4;
+            for (let offset = 0; offset <= 5; offset++) {
+                if (offset === 5) {
+                    futureMino.offset = 0;
+                    break;
+                }
+                futureMino.offset = offset;
+                if (Game.isMinoMovable(futureMino, this.field)) {
+                    this.mino.offset = offset;
+                    can_rotate = true;
+                    break;
+                }
             }
+            if (can_rotate) {
+                this.mino.rot += this.minoVr;
+            } else {
+                this.mino.offset = 0;
+            }
+            // this.mino.offset = 0;
             this.minoVr = 0;
         }
 
@@ -109,6 +161,8 @@ class Game {
         background(64);
         this.field.draw();
         this.mino.draw();
+        this.drawNexts();
+        this.drawHold();
         this.fc++;
     }
 }
