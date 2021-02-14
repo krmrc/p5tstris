@@ -220,7 +220,7 @@ class Game {
     }
     drawHold() {
         if (this.hold !== null) {
-            let o = new Mino(-2.5, 20, 0, this.hold).draw();
+            let o = new Mino(-3.5, 20, 0, this.hold).draw();
         }
     }
     proc() {
@@ -273,19 +273,26 @@ class Game {
             let can_rotate = false;
             futureMino.rot = (futureMino.rot + this.minoVr + 400) % 4;
             for (let offset = 0; offset <= 5; offset++) {
+                let diff = Srs.getRotation(this.mino, futureMino, offset);
+                futureMino.x += diff.x;
+                futureMino.y += diff.y;
                 if (offset === 5) {
                     futureMino.offset = 0;
                     break;
                 }
-                futureMino.offset = offset;
                 if (Game.isMinoMovable(futureMino, this.field)) {
-                    this.mino.offset = offset;
+                    this.mino.x = futureMino.x;
+                    this.mino.y = futureMino.y;
                     can_rotate = true;
                     break;
                 }
+                else {
+                    futureMino.x = this.mino.x;
+                    futureMino.y = this.mino.y;
+                }
             }
             if (can_rotate) {
-                this.mino.rot += this.minoVr;
+                this.mino.rot = (this.mino.rot + this.minoVr + 4000) % 4;
             }
             else {
                 this.mino.offset = 0;
@@ -313,6 +320,7 @@ class Mino {
         else {
             this.offset = 0;
         }
+        this.p_rot = 0;
     }
     calcBlocks() {
         let blocks = [];
@@ -343,7 +351,6 @@ class Mino {
         for (let r = 0; r < rot; r++) {
             blocks = blocks.map(b => new Block(-b.y, b.x));
         }
-        blocks = Srs.calcRotation(blocks, rot, this.offset, this.shape);
         blocks.forEach(b => (b.x += this.x, b.y += this.y));
         return blocks;
     }
@@ -367,51 +374,76 @@ class Mino {
     }
 }
 class Srs {
-    static calcRotation(block, rot, off, kind) {
-        switch (kind) {
+    static getRotation(now, future, off) {
+        switch (now.shape) {
             case 6:
-                if (rot + 400 % 4 === 0) {
-                    block = block.map(b => new Block(b.x - Srs.Z[off].x, b.y - Srs.Z[off].y));
+                if (now.rot === 0 && future.rot === 1) {
+                    return new Block(Srs.Z[off].x - Srs.R_O[off].x, Srs.Z[off].y - Srs.R_O[off].y);
                 }
-                else if (rot + 400 % 4 === 1) {
-                    block = block.map(b => new Block(b.x - Srs.R_O[off].x, b.y - Srs.R_O[off].y));
+                if (now.rot === 1 && future.rot === 2) {
+                    return new Block(Srs.R_O[off].x - Srs.T_O[off].x, Srs.R_O[off].y - Srs.T_O[off].y);
                 }
-                else if (rot + 400 % 4 === 2) {
-                    block = block.map(b => new Block(b.x - Srs.T_O[off].x, b.y - Srs.T_O[off].y));
+                if (now.rot === 2 && future.rot === 3) {
+                    return new Block(Srs.T_O[off].x - Srs.L_O[off].x, Srs.T_O[off].y - Srs.L_O[off].y);
                 }
-                else if (rot + 400 % 4 === 3) {
-                    block = block.map(b => new Block(b.x - Srs.L_O[off].x, b.y - Srs.L_O[off].y));
+                if (now.rot === 3 && future.rot === 0) {
+                    return new Block(Srs.L_O[off].x - Srs.Z[off].x, Srs.L_O[off].y - Srs.Z[off].y);
                 }
                 break;
             case 7:
-                if (rot + 400 % 4 === 0) {
-                    block = block.map(b => new Block(b.x - Srs.Z_I[off].x, b.y - Srs.Z_I[off].y));
+                if (now.rot === 0 && future.rot === 1) {
+                    return new Block(Srs.Z_I[off].x - Srs.R_I[off].x, Srs.Z_I[off].y - Srs.R_I[off].y);
                 }
-                else if (rot + 400 % 4 === 1) {
-                    block = block.map(b => new Block(b.x - Srs.R_I[off].x, b.y - Srs.R_I[off].y));
+                if (now.rot === 1 && future.rot === 2) {
+                    return new Block(Srs.R_I[off].x - Srs.T_I[off].x, Srs.R_I[off].y - Srs.T_I[off].y);
                 }
-                else if (rot + 400 % 4 === 2) {
-                    block = block.map(b => new Block(b.x - Srs.T_I[off].x, b.y - Srs.T_I[off].y));
+                if (now.rot === 2 && future.rot === 3) {
+                    return new Block(Srs.T_I[off].x - Srs.L_I[off].x, Srs.T_I[off].y - Srs.L_I[off].y);
                 }
-                else if (rot + 400 % 4 === 3) {
-                    block = block.map(b => new Block(b.x - Srs.L_I[off].x, b.y - Srs.L_I[off].y));
+                if (now.rot === 3 && future.rot === 0) {
+                    return new Block(Srs.L_I[off].x - Srs.Z_I[off].x, Srs.L_I[off].y - Srs.Z_I[off].y);
+                }
+                if (now.rot === 0 && future.rot === 3) {
+                    return new Block(Srs.Z_I[off].x - Srs.L_I[off].x, Srs.Z_I[off].y - Srs.L_I[off].y);
+                }
+                if (now.rot === 1 && future.rot === 0) {
+                    return new Block(Srs.R_I[off].x - Srs.Z_I[off].x, Srs.R_I[off].y - Srs.Z_I[off].y);
+                }
+                if (now.rot === 2 && future.rot === 1) {
+                    return new Block(Srs.T_I[off].x - Srs.R_I[off].x, Srs.T_I[off].y - Srs.R_I[off].y);
+                }
+                if (now.rot === 3 && future.rot === 2) {
+                    return new Block(Srs.L_I[off].x - Srs.T_I[off].x, Srs.L_I[off].y - Srs.T_I[off].y);
                 }
                 break;
             default:
-                if (rot + 400 % 4 === 0) {
-                    block = block.map(b => new Block(b.x - Srs.Z[off].x, b.y - Srs.Z[off].y));
+                if (now.rot === 0 && future.rot === 1) {
+                    return new Block(Srs.Z[off].x - Srs.R[off].x, Srs.Z[off].y - Srs.R[off].y);
                 }
-                else if (rot + 400 % 4 === 1) {
-                    block = block.map(b => new Block(b.x - Srs.R[off].x, b.y - Srs.R[off].y));
+                if (now.rot === 1 && future.rot === 2) {
+                    return new Block(Srs.R[off].x - Srs.T[off].x, Srs.R[off].y - Srs.T[off].y);
                 }
-                else if (rot + 400 % 4 === 2) {
-                    block = block.map(b => new Block(b.x - Srs.T[off].x, b.y - Srs.T[off].y));
+                if (now.rot === 2 && future.rot === 3) {
+                    return new Block(Srs.T[off].x - Srs.L[off].x, Srs.T[off].y - Srs.L[off].y);
                 }
-                else if (rot + 400 % 4 === 3) {
-                    block = block.map(b => new Block(b.x - Srs.L[off].x, b.y - Srs.L[off].y));
+                if (now.rot === 3 && future.rot === 0) {
+                    return new Block(Srs.L[off].x - Srs.Z[off].x, Srs.L[off].y - Srs.Z[off].y);
                 }
+                if (now.rot === 0 && future.rot === 3) {
+                    return new Block(Srs.Z[off].x - Srs.L[off].x, Srs.Z[off].y - Srs.L[off].y);
+                }
+                if (now.rot === 1 && future.rot === 0) {
+                    return new Block(Srs.R[off].x - Srs.Z[off].x, Srs.R[off].y - Srs.Z[off].y);
+                }
+                if (now.rot === 2 && future.rot === 1) {
+                    return new Block(Srs.T[off].x - Srs.R[off].x, Srs.T[off].y - Srs.R[off].y);
+                }
+                if (now.rot === 3 && future.rot === 2) {
+                    return new Block(Srs.L[off].x - Srs.T[off].x, Srs.L[off].y - Srs.T[off].y);
+                }
+                break;
         }
-        return block;
+        return new Block(0, 0);
     }
 }
 Srs.Z = [new Block(0, 0), new Block(0, 0), new Block(0, 0), new Block(0, 0), new Block(0, 0)];
