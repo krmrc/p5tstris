@@ -517,10 +517,10 @@ function setup() {
 }
 function draw() {
     if (left_clicking) {
-        game.field.tiles[floor(mouseY / Block.SIZE)][floor(mouseX / Block.SIZE)] = 8;
+        game.field.tiles[floor(mouseY / Block.SIZE)][floor((mouseX - Block.OFFSET_X) / Block.SIZE)] = 8;
     }
     if (right_clicking) {
-        game.field.tiles[floor(mouseY / Block.SIZE)][floor(mouseX / Block.SIZE)] = 0;
+        game.field.tiles[floor(mouseY / Block.SIZE)][floor((mouseX - Block.OFFSET_X) / Block.SIZE)] = 0;
     }
     game.proc();
 }
