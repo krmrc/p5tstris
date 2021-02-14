@@ -9,31 +9,31 @@ class Block {
             case 0:
                 c = ' ';
                 break;
-            case 7:
-                c = 'T';
-                break;
             case 1:
-                c = 'Z';
-                break;
-            case 2:
                 c = 'S';
                 break;
-            case 3:
-                c = 'L';
+            case 2:
+                c = 'Z';
                 break;
-            case 4:
+            case 3:
                 c = 'J';
                 break;
+            case 4:
+                c = 'L';
+                break;
             case 5:
-                c = 'O';
+                c = 'T';
                 break;
             case 6:
+                c = 'O';
+                break;
+            case 7:
                 c = 'I';
                 break;
             case 8:
                 c = 'B';
                 break;
-            default: c = 'B';
+            default: c = 'W';
         }
         return c;
     }
@@ -43,25 +43,25 @@ class Block {
             case 0:
                 c = color('black');
                 break;
-            case 7:
-                c = color('purple');
-                break;
             case 1:
-                c = color('red');
-                break;
-            case 2:
                 c = color('green');
                 break;
-            case 3:
-                c = color('orange');
+            case 2:
+                c = color('red');
                 break;
-            case 4:
+            case 3:
                 c = color('blue');
                 break;
+            case 4:
+                c = color('orange');
+                break;
             case 5:
-                c = color('yellow');
+                c = color('purple');
                 break;
             case 6:
+                c = color('yellow');
+                break;
+            case 7:
                 c = color('cyan');
                 break;
             case 8:
@@ -72,10 +72,11 @@ class Block {
         return c;
     }
     draw() {
-        rect(Block.SIZE * this.x, Block.SIZE * this.y, Block.SIZE, Block.SIZE);
+        rect(Block.SIZE * this.x + Block.OFFSET_X, Block.SIZE * this.y, Block.SIZE, Block.SIZE);
     }
 }
 Block.SIZE = 20;
+Block.OFFSET_X = 100;
 class Field {
     constructor() {
         this.tiles = [
@@ -180,10 +181,11 @@ class Game {
         this.minos = new Array();
         this.rng_generate();
         this.mino = this.minos.shift();
+        this.hold = null;
+        this.holded = false;
     }
     rng_next() {
         let y = this.rng;
-        console.log(y);
         y = y ^ (y << 13);
         y = y ^ (y >> 17);
         return y = y ^ (y << 5);
@@ -203,7 +205,7 @@ class Game {
                 bag[j] = oldValue;
             }
             for (let i = 0; i < 7; i++) {
-                this.minos.push(new Mino(7, 20, 0, bag[i] + 1));
+                this.minos.push(new Mino(6, 20, 0, bag[i] + 1));
             }
         }
     }
@@ -211,8 +213,34 @@ class Game {
         let blocks = mino.calcBlocks();
         return blocks.every(b => field.tileAt(b.x, b.y) === 0);
     }
+    drawNexts() {
+        for (let i = 0; i < Game.VISIBLE_NEXT; i++) {
+            let o = new Mino(18, 20 + (i * 4), 0, this.minos[i].shape).draw();
+        }
+    }
+    drawHold() {
+        if (this.hold !== null) {
+            let o = new Mino(-2.5, 20, 0, this.hold).draw();
+        }
+    }
     proc() {
-        if (this.minoDrop || this.fc % 20 === 19) {
+        if (this.mino_hold) {
+            if (!this.holded) {
+                if (this.hold === null) {
+                    this.hold = this.mino.shape;
+                    this.mino = this.minos.shift();
+                    this.rng_generate();
+                }
+                else {
+                    let tmp = new Mino(0, 0, 0, this.mino.shape);
+                    this.mino = new Mino(6, 20, 0, this.hold);
+                    this.hold = tmp.shape;
+                }
+                this.holded = true;
+            }
+            this.mino_hold = false;
+        }
+        if (this.minoDrop) {
             let futureMino = this.mino.copy();
             futureMino.y += 1;
             if (Game.isMinoMovable(futureMino, this.field)) {
@@ -224,6 +252,7 @@ class Game {
                 }
                 this.mino = this.minos.shift();
                 this.rng_generate();
+                this.holded = false;
             }
             let line;
             while ((line = this.field.findLineFilled()) !== -1) {
@@ -241,54 +270,80 @@ class Game {
         }
         if (this.minoVr !== 0) {
             let futureMino = this.mino.copy();
-            futureMino.rot += this.minoVr;
-            if (Game.isMinoMovable(futureMino, this.field)) {
+            let can_rotate = false;
+            futureMino.rot = (futureMino.rot + this.minoVr + 400) % 4;
+            for (let offset = 0; offset <= 5; offset++) {
+                if (offset === 5) {
+                    futureMino.offset = 0;
+                    break;
+                }
+                futureMino.offset = offset;
+                if (Game.isMinoMovable(futureMino, this.field)) {
+                    this.mino.offset = offset;
+                    can_rotate = true;
+                    break;
+                }
+            }
+            if (can_rotate) {
                 this.mino.rot += this.minoVr;
+            }
+            else {
+                this.mino.offset = 0;
             }
             this.minoVr = 0;
         }
         background(64);
         this.field.draw();
         this.mino.draw();
+        this.drawNexts();
+        this.drawHold();
         this.fc++;
     }
 }
+Game.VISIBLE_NEXT = 5;
 class Mino {
-    constructor(x, y, rot, shape) {
+    constructor(x, y, rot, shape, offset) {
         this.x = x;
         this.y = y;
         this.rot = rot;
         this.shape = shape;
+        if (offset) {
+            this.offset = offset;
+        }
+        else {
+            this.offset = 0;
+        }
     }
     calcBlocks() {
         let blocks = [];
         switch (this.shape) {
-            case 7:
-                blocks = [new Block(-1, 0), new Block(0, 0), new Block(0, -1), new Block(1, 0)];
-                break;
             case 1:
-                blocks = [new Block(-1, -1), new Block(0, -1), new Block(0, 0), new Block(1, 0)];
-                break;
-            case 2:
                 blocks = [new Block(-1, 0), new Block(0, 0), new Block(0, -1), new Block(1, -1)];
                 break;
+            case 2:
+                blocks = [new Block(-1, -1), new Block(0, -1), new Block(0, 0), new Block(1, 0)];
+                break;
             case 3:
-                blocks = [new Block(-1, -2), new Block(-1, -1), new Block(-1, 0), new Block(0, 0)];
+                blocks = [new Block(1, 0), new Block(-1, 0), new Block(-1, -1), new Block(0, 0)];
                 break;
             case 4:
-                blocks = [new Block(0, -2), new Block(0, -1), new Block(-1, 0), new Block(0, 0)];
+                blocks = [new Block(1, 0), new Block(-1, 0), new Block(1, -1), new Block(0, 0)];
                 break;
             case 5:
-                blocks = [new Block(-1, -1), new Block(-1, 0), new Block(0, 0), new Block(0, -1)];
+                blocks = [new Block(-1, 0), new Block(0, 0), new Block(0, -1), new Block(1, 0)];
                 break;
             case 6:
-                blocks = [new Block(-2, 0), new Block(-1, 0), new Block(0, 0), new Block(1, 0)];
+                blocks = [new Block(1, -1), new Block(1, 0), new Block(0, 0), new Block(0, -1)];
+                break;
+            case 7:
+                blocks = [new Block(-1, 0), new Block(2, 0), new Block(0, 0), new Block(1, 0)];
                 break;
         }
         let rot = (40000000 + this.rot) % 4;
         for (let r = 0; r < rot; r++) {
             blocks = blocks.map(b => new Block(-b.y, b.x));
         }
+        blocks = Srs.calcRotation(blocks, rot, this.offset, this.shape);
         blocks.forEach(b => (b.x += this.x, b.y += this.y));
         return blocks;
     }
@@ -311,6 +366,65 @@ class Mino {
         return `${Block.getMinoName(this.shape)}`;
     }
 }
+class Srs {
+    static calcRotation(block, rot, off, kind) {
+        switch (kind) {
+            case 6:
+                if (rot + 400 % 4 === 0) {
+                    block = block.map(b => new Block(b.x - Srs.Z[off].x, b.y - Srs.Z[off].y));
+                }
+                else if (rot + 400 % 4 === 1) {
+                    block = block.map(b => new Block(b.x - Srs.R_O[off].x, b.y - Srs.R_O[off].y));
+                }
+                else if (rot + 400 % 4 === 2) {
+                    block = block.map(b => new Block(b.x - Srs.T_O[off].x, b.y - Srs.T_O[off].y));
+                }
+                else if (rot + 400 % 4 === 3) {
+                    block = block.map(b => new Block(b.x - Srs.L_O[off].x, b.y - Srs.L_O[off].y));
+                }
+                break;
+            case 7:
+                if (rot + 400 % 4 === 0) {
+                    block = block.map(b => new Block(b.x - Srs.Z_I[off].x, b.y - Srs.Z_I[off].y));
+                }
+                else if (rot + 400 % 4 === 1) {
+                    block = block.map(b => new Block(b.x - Srs.R_I[off].x, b.y - Srs.R_I[off].y));
+                }
+                else if (rot + 400 % 4 === 2) {
+                    block = block.map(b => new Block(b.x - Srs.T_I[off].x, b.y - Srs.T_I[off].y));
+                }
+                else if (rot + 400 % 4 === 3) {
+                    block = block.map(b => new Block(b.x - Srs.L_I[off].x, b.y - Srs.L_I[off].y));
+                }
+                break;
+            default:
+                if (rot + 400 % 4 === 0) {
+                    block = block.map(b => new Block(b.x - Srs.Z[off].x, b.y - Srs.Z[off].y));
+                }
+                else if (rot + 400 % 4 === 1) {
+                    block = block.map(b => new Block(b.x - Srs.R[off].x, b.y - Srs.R[off].y));
+                }
+                else if (rot + 400 % 4 === 2) {
+                    block = block.map(b => new Block(b.x - Srs.T[off].x, b.y - Srs.T[off].y));
+                }
+                else if (rot + 400 % 4 === 3) {
+                    block = block.map(b => new Block(b.x - Srs.L[off].x, b.y - Srs.L[off].y));
+                }
+        }
+        return block;
+    }
+}
+Srs.Z = [new Block(0, 0), new Block(0, 0), new Block(0, 0), new Block(0, 0), new Block(0, 0)];
+Srs.R = [new Block(0, 0), new Block(1, 0), new Block(1, 1), new Block(0, -2), new Block(1, -2)];
+Srs.T = [new Block(0, 0), new Block(0, 0), new Block(0, 0), new Block(0, 0), new Block(0, 0)];
+Srs.L = [new Block(0, 0), new Block(-1, 0), new Block(-1, 1), new Block(0, -2), new Block(-1, -2)];
+Srs.R_O = [new Block(0, 1)];
+Srs.T_O = [new Block(-1, 1)];
+Srs.L_O = [new Block(-1, 0)];
+Srs.Z_I = [new Block(0, 0), new Block(-1, 0), new Block(2, 0), new Block(-1, 0), new Block(2, 0)];
+Srs.R_I = [new Block(-1, 0), new Block(0, 0), new Block(0, 0), new Block(0, -1), new Block(0, 2)];
+Srs.T_I = [new Block(-1, -1), new Block(1, -1), new Block(-2, -1), new Block(1, 0), new Block(-2, 0)];
+Srs.L_I = [new Block(0, -1), new Block(0, -1), new Block(0, -1), new Block(0, 1), new Block(0, -2)];
 let game;
 let left_clicking = false;
 let right_clicking = false;
@@ -341,6 +455,8 @@ function keyPressed() {
         game.minoVr = 1;
     if (keyCode === 83)
         game.minoDrop = true;
+    if (key === ' ')
+        game.mino_hold = true;
 }
 function setup() {
     createCanvas(600, 800);
