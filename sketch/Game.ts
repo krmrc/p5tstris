@@ -79,6 +79,20 @@ class Game {
             let o = new Mino(-3.5, 20, 0, this.hold).draw()
         }
     }
+    put() {
+        for (let b of this.mino.calcBlocks()) {
+            this.field.putBlock(b.x, b.y, this.mino.shape);
+        }
+        this.mino = this.minos.shift();
+        this.rng_generate();
+        this.holded = false;
+    }
+    deleteLine() {
+        let line;
+        while ((line = this.field.findLineFilled()) !== -1) {
+            this.field.cutLine(line);
+        }
+    }
 
     proc() {
         // Hold
@@ -109,20 +123,11 @@ class Game {
             } else {
                 // 接地
                 // 設置処理
-                for (let b of this.mino.calcBlocks()) {
-                    this.field.putBlock(b.x, b.y, this.mino.shape);
-                }
-                // console.log("せっち");
-                this.mino = this.minos.shift();
-                this.rng_generate();
-                this.holded = false;
+                // this.put();
             }
             // 消去
-            let line;
-            while ((line = this.field.findLineFilled()) !== -1) {
-                this.field.cutLine(line);
-            }
-            this.minoDrop = false;
+            // this.deleteLine();
+            // this.minoDrop = false;
         }
         // ハードドロップ
         if (this.minoHardDrop) {
@@ -131,22 +136,12 @@ class Game {
                 futureMino.y++;
             }
             this.mino.y = futureMino.y - 1;
-
             // 接地
             // 設置処理
-            for (let b of this.mino.calcBlocks()) {
-                this.field.putBlock(b.x, b.y, this.mino.shape);
-            }
-            // console.log("せっち");
-            this.mino = this.minos.shift();
-            this.rng_generate();
-            this.holded = false;
+            this.put();
 
             // 消去
-            let line;
-            while ((line = this.field.findLineFilled()) !== -1) {
-                this.field.cutLine(line);
-            }
+            this.deleteLine();
             this.minoHardDrop = false;
         }
 
@@ -157,7 +152,7 @@ class Game {
             if (Game.isMinoMovable(futureMino, this.field)) {
                 this.mino.x += this.minoVx;
             }
-            this.minoVx = 0;
+            // this.minoVx = 0;
         }
         // 回転
         if (this.minoVr !== 0) {
@@ -166,13 +161,13 @@ class Game {
             futureMino.rot = (futureMino.rot + this.minoVr + 400) % 4;
 
             for (let offset = 0; offset <= 5; offset++) { // Blockのx,yの移動分だけ返していく。
-                let diff: Block = Srs.getRotation(this.mino, futureMino, offset);
-                futureMino.x += diff.x;
-                futureMino.y += diff.y;
                 if (offset === 5) {
                     futureMino.offset = 0;
                     break;
                 }
+                let diff: Block = Srs.getRotation(this.mino, futureMino, offset);
+                futureMino.x += diff.x;
+                futureMino.y += diff.y;
                 if (Game.isMinoMovable(futureMino, this.field)) {
                     this.mino.x = futureMino.x;
                     this.mino.y = futureMino.y;
