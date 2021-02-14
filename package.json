@@ -1,0 +1,20 @@
+{
+  "name": "p5tstris",
+  "version": "0.1.0",
+  "description": "Project",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "run-p start-compile start-run",
+    "start-compile": "tsc --watch",
+    "start-run": "browser-sync start --server -w",
+    "deploy": "npm run build && gh-pages -d build --repo <url>"
+  },
+  "homepage": "https://github.com/",
+  "devDependencies": {
+    "@types/p5": "^0.9.1",
+    "browser-sync": "^2.26.14",
+    "gh-pages": "^3.1.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^4.1.5"
+  }
+}
