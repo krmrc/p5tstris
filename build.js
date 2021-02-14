@@ -72,10 +72,10 @@ class Block {
         return c;
     }
     draw() {
-        rect(Block.SIZE * this.x + Block.OFFSET_X, Block.SIZE * this.y, Block.SIZE, Block.SIZE);
+        rect(Block.size * this.x + Block.OFFSET_X, Block.size * this.y, Block.size, Block.size);
     }
 }
-Block.SIZE = 20;
+Block.size = 20;
 Block.OFFSET_X = 100;
 class Field {
     constructor() {
@@ -517,12 +517,15 @@ function setup() {
     window.addEventListener("touchstart", function (event) { event.preventDefault(); }, { passive: false });
     window.addEventListener("touchmove", function (event) { event.preventDefault(); }, { passive: false });
 }
+function windowResized() {
+    Block.size = floor(min(windowWidth, windowHeight) / 45);
+}
 function draw() {
     if (left_clicking) {
-        game.field.tiles[floor(mouseY / Block.SIZE)][floor((mouseX - Block.OFFSET_X) / Block.SIZE)] = 8;
+        game.field.tiles[floor(mouseY / Block.size)][floor((mouseX - Block.OFFSET_X) / Block.size)] = 8;
     }
     if (right_clicking) {
-        game.field.tiles[floor(mouseY / Block.SIZE)][floor((mouseX - Block.OFFSET_X) / Block.SIZE)] = 0;
+        game.field.tiles[floor(mouseY / Block.size)][floor((mouseX - Block.OFFSET_X) / Block.size)] = 0;
     }
     game.proc();
 }
