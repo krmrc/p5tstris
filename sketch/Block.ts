@@ -1,7 +1,7 @@
 class Block {
     x: number;
     y: number;
-    static readonly SIZE: number = 20;
+    static size: number = 20;
     static readonly OFFSET_X: number = 100;
     constructor(x: number, y: number) {
         this.x = x;
@@ -42,6 +42,6 @@ class Block {
     }
 
     draw() {
-        rect(Block.SIZE * this.x + Block.OFFSET_X, Block.SIZE * this.y, Block.SIZE, Block.SIZE);
+        rect(Block.size * this.x + Block.OFFSET_X, Block.size * this.y, Block.size, Block.size);
     }
 }
