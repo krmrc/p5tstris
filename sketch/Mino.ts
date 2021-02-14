@@ -4,6 +4,7 @@ class Mino {
     rot: number;
     shape: number;
     offset: number;
+    p_rot: number;
     constructor(x: number, y: number, rot: number, shape: number, offset?: number) {
         this.x = x;
         this.y = y;
@@ -14,6 +15,7 @@ class Mino {
         } else {
             this.offset = 0;
         }
+        this.p_rot = 0;
     }
 
     calcBlocks(): Block[] {
@@ -35,7 +37,7 @@ class Mino {
             // ※mapについて: https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/map
             blocks = blocks.map(b => new Block(-b.y, b.x));
         }
-        blocks = Srs.calcRotation(blocks, rot, this.offset, this.shape);
+        // blocks = Srs.calcRotation(blocks, rot, this.offset, this.shape);
         // Srs.calcRotation(this);
         //ブロックのグローバル座標（Field上の座標）に変換する
         //※forEachについて: https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach

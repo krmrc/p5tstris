@@ -74,7 +74,7 @@ class Game {
     }
     drawHold() {
         if (this.hold !== null) {
-            let o = new Mino(-2.5, 20, 0, this.hold).draw()
+            let o = new Mino(-3.5, 20, 0, this.hold).draw()
         }
     }
 
@@ -136,20 +136,27 @@ class Game {
             let futureMino = this.mino.copy();
             let can_rotate = false;
             futureMino.rot = (futureMino.rot + this.minoVr + 400) % 4;
-            for (let offset = 0; offset <= 5; offset++) {
+
+            for (let offset = 0; offset <= 5; offset++) { // Blockのx,yの移動分だけ返していく。
+                let diff: Block = Srs.getRotation(this.mino, futureMino, offset);
+                futureMino.x += diff.x;
+                futureMino.y += diff.y;
                 if (offset === 5) {
                     futureMino.offset = 0;
                     break;
                 }
-                futureMino.offset = offset;
                 if (Game.isMinoMovable(futureMino, this.field)) {
-                    this.mino.offset = offset;
+                    this.mino.x = futureMino.x;
+                    this.mino.y = futureMino.y;
                     can_rotate = true;
                     break;
+                } else {
+                    futureMino.x = this.mino.x;
+                    futureMino.y = this.mino.y;
                 }
             }
             if (can_rotate) {
-                this.mino.rot += this.minoVr;
+                this.mino.rot = (this.mino.rot + this.minoVr + 4000) % 4;
             } else {
                 this.mino.offset = 0;
             }
