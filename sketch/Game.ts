@@ -2,6 +2,7 @@ class Game {
     mino: Mino;
     hold: number;
     minoVx: number;
+    minoHardDrop: boolean;
     minoDrop: boolean;
     mino_hold: boolean;
     holded: boolean;
@@ -15,6 +16,7 @@ class Game {
 
     constructor(rng?: number) {
         this.minoVx = 0;
+        this.minoHardDrop = false;
         this.minoDrop = false;
         this.minoVr = 0;
         this.field = new Field();
@@ -122,6 +124,32 @@ class Game {
             }
             this.minoDrop = false;
         }
+        // ハードドロップ
+        if (this.minoHardDrop) {
+            let futureMino = this.mino.copy();
+            while (Game.isMinoMovable(futureMino, this.field)) {
+                futureMino.y++;
+            }
+            this.mino.y = futureMino.y - 1;
+
+            // 接地
+            // 設置処理
+            for (let b of this.mino.calcBlocks()) {
+                this.field.putBlock(b.x, b.y, this.mino.shape);
+            }
+            // console.log("せっち");
+            this.mino = this.minos.shift();
+            this.rng_generate();
+            this.holded = false;
+
+            // 消去
+            let line;
+            while ((line = this.field.findLineFilled()) !== -1) {
+                this.field.cutLine(line);
+            }
+            this.minoHardDrop = false;
+        }
+
         // 左右移動
         if (this.minoVx !== 0) {
             let futureMino = this.mino.copy();

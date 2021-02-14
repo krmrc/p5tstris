@@ -23,12 +23,13 @@ function keyPressed() {
     if (keyCode === 68) game.minoVx = 1;
     if (keyCode === 81) game.minoVr = -1;
     if (keyCode === 69) game.minoVr = 1;
+    if (key === 'w') game.minoHardDrop = true;
     if (keyCode === 83) game.minoDrop = true;
     if (key === ' ') game.mino_hold = true;
 }
 
 function setup() {
-    createCanvas(600, 800);
+    createCanvas(600, 900);
     game = new Game();
 }
 

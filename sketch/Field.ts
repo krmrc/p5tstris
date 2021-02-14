@@ -69,8 +69,8 @@ class Field {
         this.tiles.unshift([8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8]);
     }
     draw() {
-        for (let y = 0; y < 42; y++) {
-            for (let x = 0; x < 14; x++) {
+        for (let y = 0; y < 41; y++) {
+            for (let x = 1; x < 13; x++) {
                 push();
                 fill(Block.getColor(this.tileAt(x, y)));
                 new Block(x, y).draw();
