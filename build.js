@@ -72,11 +72,12 @@ class Block {
         return c;
     }
     draw() {
-        rect(Block.size * this.x + Block.OFFSET_X, Block.size * this.y, Block.size, Block.size);
+        rect(Block.size * this.x + Block.offset_x, Block.size * this.y + Block.offset_y, Block.size, Block.size);
     }
 }
 Block.size = 20;
-Block.OFFSET_X = 100;
+Block.offset_x = Block.size * 5;
+Block.offset_y = -Block.size * 15;
 class Field {
     constructor() {
         this.tiles = [
@@ -145,7 +146,7 @@ class Field {
         this.tiles.unshift([8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8]);
     }
     draw() {
-        for (let y = 0; y < 41; y++) {
+        for (let y = 20; y < 41; y++) {
             for (let x = 1; x < 13; x++) {
                 push();
                 fill(Block.getColor(this.tileAt(x, y)));
@@ -224,6 +225,20 @@ class Game {
             let o = new Mino(-3.5, 20, 0, this.hold).draw();
         }
     }
+    put() {
+        for (let b of this.mino.calcBlocks()) {
+            this.field.putBlock(b.x, b.y, this.mino.shape);
+        }
+        this.mino = this.minos.shift();
+        this.rng_generate();
+        this.holded = false;
+    }
+    deleteLine() {
+        let line;
+        while ((line = this.field.findLineFilled()) !== -1) {
+            this.field.cutLine(line);
+        }
+    }
     proc() {
         if (this.mino_hold) {
             if (!this.holded) {
@@ -248,18 +263,7 @@ class Game {
                 this.mino.y += 1;
             }
             else {
-                for (let b of this.mino.calcBlocks()) {
-                    this.field.putBlock(b.x, b.y, this.mino.shape);
-                }
-                this.mino = this.minos.shift();
-                this.rng_generate();
-                this.holded = false;
             }
-            let line;
-            while ((line = this.field.findLineFilled()) !== -1) {
-                this.field.cutLine(line);
-            }
-            this.minoDrop = false;
         }
         if (this.minoHardDrop) {
             let futureMino = this.mino.copy();
@@ -267,16 +271,8 @@ class Game {
                 futureMino.y++;
             }
             this.mino.y = futureMino.y - 1;
-            for (let b of this.mino.calcBlocks()) {
-                this.field.putBlock(b.x, b.y, this.mino.shape);
-            }
-            this.mino = this.minos.shift();
-            this.rng_generate();
-            this.holded = false;
-            let line;
-            while ((line = this.field.findLineFilled()) !== -1) {
-                this.field.cutLine(line);
-            }
+            this.put();
+            this.deleteLine();
             this.minoHardDrop = false;
         }
         if (this.minoVx !== 0) {
@@ -285,20 +281,19 @@ class Game {
             if (Game.isMinoMovable(futureMino, this.field)) {
                 this.mino.x += this.minoVx;
             }
-            this.minoVx = 0;
         }
         if (this.minoVr !== 0) {
             let futureMino = this.mino.copy();
             let can_rotate = false;
             futureMino.rot = (futureMino.rot + this.minoVr + 400) % 4;
             for (let offset = 0; offset <= 5; offset++) {
-                let diff = Srs.getRotation(this.mino, futureMino, offset);
-                futureMino.x += diff.x;
-                futureMino.y += diff.y;
                 if (offset === 5) {
                     futureMino.offset = 0;
                     break;
                 }
+                let diff = Srs.getRotation(this.mino, futureMino, offset);
+                futureMino.x += diff.x;
+                futureMino.y += diff.y;
                 if (Game.isMinoMovable(futureMino, this.field)) {
                     this.mino.x = futureMino.x;
                     this.mino.y = futureMino.y;
@@ -500,9 +495,9 @@ function keyPressed() {
         game.minoVx = -1;
     if (keyCode === 68)
         game.minoVx = 1;
-    if (keyCode === 81)
+    if (key === 'n')
         game.minoVr = -1;
-    if (keyCode === 69)
+    if (key === 'm')
         game.minoVr = 1;
     if (key === 'w')
         game.minoHardDrop = true;
@@ -511,21 +506,52 @@ function keyPressed() {
     if (key === ' ')
         game.mino_hold = true;
 }
+function keyReleased() {
+    if (keyCode === 65)
+        game.minoVx = 0;
+    if (keyCode === 68)
+        game.minoVx = 0;
+    if (key === 'n')
+        game.minoVr = 0;
+    if (key === 'm')
+        game.minoVr = 0;
+    if (key === 'w')
+        game.minoHardDrop = false;
+    if (keyCode === 83)
+        game.minoDrop = false;
+    if (key === ' ')
+        game.mino_hold = false;
+}
+function touchStart() {
+    if (mouseX > windowWidth / 2) {
+        game.minoVr = 1;
+    }
+    else {
+        game.minoVr = -1;
+    }
+}
 function setup() {
     createCanvas(windowWidth, windowHeight);
-    game = new Game();
     window.addEventListener("touchstart", function (event) { event.preventDefault(); }, { passive: false });
     window.addEventListener("touchmove", function (event) { event.preventDefault(); }, { passive: false });
+    Block.size = floor(min(windowWidth, windowHeight) / 30);
+    Block.offset_x = Block.size * 5;
+    Block.offset_y = Block.size * -15;
+    game = new Game();
+    frameRate(20);
 }
 function windowResized() {
-    Block.size = floor(min(windowWidth, windowHeight) / 45);
+    resizeCanvas(windowWidth, windowHeight);
+    Block.size = floor(min(windowWidth, windowHeight) / 30);
+    Block.offset_x = Block.size * 5;
+    Block.offset_y = Block.size * -15;
 }
 function draw() {
     if (left_clicking) {
-        game.field.tiles[floor(mouseY / Block.size)][floor((mouseX - Block.OFFSET_X) / Block.size)] = 8;
+        game.field.tiles[floor((mouseY - Block.offset_y) / Block.size)][floor((mouseX - Block.offset_x) / Block.size)] = 8;
     }
     if (right_clicking) {
-        game.field.tiles[floor(mouseY / Block.size)][floor((mouseX - Block.OFFSET_X) / Block.size)] = 0;
+        game.field.tiles[floor((mouseY - Block.offset_y) / Block.size)][floor((mouseX - Block.offset_x) / Block.size)] = 0;
     }
     game.proc();
 }
