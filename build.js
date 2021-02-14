@@ -145,8 +145,8 @@ class Field {
         this.tiles.unshift([8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8]);
     }
     draw() {
-        for (let y = 0; y < 42; y++) {
-            for (let x = 0; x < 14; x++) {
+        for (let y = 0; y < 41; y++) {
+            for (let x = 1; x < 13; x++) {
                 push();
                 fill(Block.getColor(this.tileAt(x, y)));
                 new Block(x, y).draw();
@@ -168,6 +168,7 @@ class Field {
 class Game {
     constructor(rng) {
         this.minoVx = 0;
+        this.minoHardDrop = false;
         this.minoDrop = false;
         this.minoVr = 0;
         this.field = new Field();
@@ -259,6 +260,24 @@ class Game {
                 this.field.cutLine(line);
             }
             this.minoDrop = false;
+        }
+        if (this.minoHardDrop) {
+            let futureMino = this.mino.copy();
+            while (Game.isMinoMovable(futureMino, this.field)) {
+                futureMino.y++;
+            }
+            this.mino.y = futureMino.y - 1;
+            for (let b of this.mino.calcBlocks()) {
+                this.field.putBlock(b.x, b.y, this.mino.shape);
+            }
+            this.mino = this.minos.shift();
+            this.rng_generate();
+            this.holded = false;
+            let line;
+            while ((line = this.field.findLineFilled()) !== -1) {
+                this.field.cutLine(line);
+            }
+            this.minoHardDrop = false;
         }
         if (this.minoVx !== 0) {
             let futureMino = this.mino.copy();
@@ -485,13 +504,15 @@ function keyPressed() {
         game.minoVr = -1;
     if (keyCode === 69)
         game.minoVr = 1;
+    if (key === 'w')
+        game.minoHardDrop = true;
     if (keyCode === 83)
         game.minoDrop = true;
     if (key === ' ')
         game.mino_hold = true;
 }
 function setup() {
-    createCanvas(600, 800);
+    createCanvas(600, 900);
     game = new Game();
 }
 function draw() {
