@@ -512,8 +512,10 @@ function keyPressed() {
         game.mino_hold = true;
 }
 function setup() {
-    createCanvas(600, 900);
+    createCanvas(windowWidth, windowHeight);
     game = new Game();
+    window.addEventListener("touchstart", function (event) { event.preventDefault(); }, { passive: false });
+    window.addEventListener("touchmove", function (event) { event.preventDefault(); }, { passive: false });
 }
 function draw() {
     if (left_clicking) {
