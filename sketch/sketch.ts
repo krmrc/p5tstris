@@ -25,7 +25,6 @@ function mousePressed() {
 function mouseReleased() {
     state.mouseReleased();
 }
-
 function draw() {
     state = state.doState();
 }

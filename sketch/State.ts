@@ -1,6 +1,5 @@
 abstract class State {
     constructor() {
-
     }
     doState(): State {
         this.drawState();
