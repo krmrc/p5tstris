@@ -322,6 +322,178 @@ class Game {
     }
 }
 Game.VISIBLE_NEXT = 5;
+class State {
+    constructor() {
+    }
+    doState() {
+        this.drawState();
+        return this.decideState();
+    }
+}
+class Setting {
+}
+Setting.left = 'a';
+Setting.right = 'd';
+Setting.up = 'w';
+Setting.down = 's';
+Setting.cw = 'm';
+Setting.ccw = 'n';
+Setting.hold = ' ';
+Setting.settings = [Setting.up, Setting.down, Setting.left, Setting.right, Setting.cw, Setting.ccw, Setting.hold];
+Setting.SETTING_NAME = ["UP", "DOWN", "LEFT", "RIGHT", "CW", "CCW", "HOLD"];
+class GameState extends State {
+    constructor() {
+        super();
+        this.left_clicking = false;
+        this.right_clicking = false;
+        this.game = new Game();
+    }
+    mousePressed() {
+        if (mouseButton === LEFT) {
+            this.left_clicking = true;
+        }
+        if (mouseButton === RIGHT) {
+            this.right_clicking = true;
+        }
+    }
+    mouseReleased() {
+        if (mouseButton === LEFT) {
+            this.left_clicking = false;
+        }
+        if (mouseButton === RIGHT) {
+            this.right_clicking = false;
+        }
+    }
+    keyPressed() {
+        if (key === Setting.left)
+            this.game.minoVx = -1;
+        if (key === Setting.right)
+            this.game.minoVx = 1;
+        if (key === Setting.ccw)
+            this.game.minoVr = -1;
+        if (key === Setting.cw)
+            this.game.minoVr = 1;
+        if (key === Setting.up)
+            this.game.minoHardDrop = true;
+        if (key === Setting.down)
+            this.game.minoDrop = true;
+        if (key === Setting.hold)
+            this.game.mino_hold = true;
+        if (key == 'r')
+            this.game = new Game();
+    }
+    keyReleased() {
+        if (key === Setting.left)
+            this.game.minoVx = 0;
+        if (key === Setting.right)
+            this.game.minoVx = 0;
+        if (key === Setting.ccw)
+            this.game.minoVr = 0;
+        if (key === Setting.cw)
+            this.game.minoVr = 0;
+        if (key === Setting.up)
+            this.game.minoHardDrop = false;
+        if (key === Setting.down)
+            this.game.minoDrop = false;
+        if (key === Setting.hold)
+            this.game.mino_hold = false;
+    }
+    touchStart() {
+        if (mouseX > windowWidth / 2) {
+            this.game.minoVr = 1;
+        }
+        else {
+            this.game.minoVr = -1;
+        }
+    }
+    windowResized() {
+        resizeCanvas(windowWidth, windowHeight);
+        Block.size = floor(min(windowWidth, windowHeight) / 30);
+        Block.offset_x = Block.size * 5;
+        Block.offset_y = Block.size * -15;
+    }
+    drawState() {
+        try {
+            if (this.left_clicking) {
+                this.game.field.tiles[floor((mouseY - Block.offset_y) / Block.size)][floor((mouseX - Block.offset_x) / Block.size)] = 8;
+            }
+            if (this.right_clicking) {
+                this.game.field.tiles[floor((mouseY - Block.offset_y) / Block.size)][floor((mouseX - Block.offset_x) / Block.size)] = 0;
+            }
+        }
+        catch (error) {
+        }
+        finally {
+            this.game.proc();
+        }
+    }
+    decideState() {
+        if (keyPressed && key === 'j') {
+            return new MenuState();
+        }
+        return this;
+    }
+}
+class MenuState extends State {
+    constructor() {
+        super();
+        this.nextState = 0;
+        this.b_game = createButton("GAME");
+        this.b_game.position((windowWidth / 2), (windowHeight / 2) - 100);
+        this.b_game.mousePressed(() => this.makeGame());
+        this.b_game.style("font-family", "Anton");
+        this.b_game.style("background-color", "#FF5000");
+        this.b_game.style("color", "#FFFFFF");
+        this.b_game.style("font-size", "24pt");
+        this.b_game.style("padding", "24px");
+        this.b_game.size(200, 100);
+        this.b_game.center('horizontal');
+        this.b_setting = createButton("OPTION");
+        this.b_setting.position(windowWidth / 2, (windowHeight / 2) + 100);
+        this.b_setting.mousePressed(() => this.makeSetting());
+        this.b_setting.style("font-family", "Anton");
+        this.b_setting.style("background-color", "#FF5000");
+        this.b_setting.style("color", "#FFFFFF");
+        this.b_setting.style("font-size", "24pt");
+        this.b_setting.style("padding", "24px");
+        this.b_setting.size(200, 100);
+        this.b_setting.center('horizontal');
+    }
+    drawState() {
+        background(128);
+    }
+    keyPressed() {
+    }
+    keyReleased() {
+    }
+    mousePressed() {
+    }
+    mouseReleased() {
+    }
+    makeGame() {
+        this.nextState = 1;
+        this.b_game.remove();
+        this.b_setting.remove();
+    }
+    makeSetting() {
+        this.nextState = 2;
+        this.b_game.remove();
+        this.b_setting.remove();
+    }
+    decideState() {
+        if (keyPressed && key === 'k' || this.nextState === 1) {
+            this.b_game.remove();
+            this.b_setting.remove();
+            return new GameState();
+        }
+        if (keyPressed && key === 'l' || this.nextState === 2) {
+            this.b_game.remove();
+            this.b_setting.remove();
+            return new OptionState();
+        }
+        return this;
+    }
+}
 class Mino {
     constructor(x, y, rot, shape, offset) {
         this.x = x;
@@ -385,6 +557,65 @@ class Mino {
     }
     toString() {
         return `${Block.getMinoName(this.shape)}`;
+    }
+}
+class OptionState extends State {
+    constructor() {
+        super();
+        this.input = new Array();
+        this.texts = new Array();
+        for (let i = 0; i < 7; i++) {
+            this.texts[i] = createElement('ul', Setting.SETTING_NAME[i]);
+            this.texts[i].position((windowWidth / 2) - 160, i * 50);
+            this.input.push(createInput());
+            this.input[i].position((windowWidth / 2) - 100, i * 50);
+            this.input[i].value(Setting.settings[i]);
+        }
+        this.b_apply = createButton("Apply");
+        this.b_apply.position(windowWidth / 2, windowHeight / 2);
+        this.b_apply.mousePressed(() => this.apply());
+        this.b_apply.style("font-family", "Anton");
+        this.b_apply.style("background-color", "#FF5000");
+        this.b_apply.style("color", "#FFFFFF");
+        this.b_apply.style("font-size", "20pt");
+        this.b_apply.style("padding", "24px");
+        this.b_apply.center();
+    }
+    drawState() {
+        background(128);
+    }
+    keyPressed() {
+    }
+    keyReleased() {
+    }
+    mousePressed() {
+    }
+    mouseReleased() {
+    }
+    apply() {
+        Setting.up = this.input[0].value();
+        Setting.down = this.input[1].value();
+        Setting.left = this.input[2].value();
+        Setting.right = this.input[3].value();
+        Setting.cw = this.input[4].value();
+        Setting.ccw = this.input[5].value();
+        Setting.hold = this.input[6].value();
+    }
+    deleteObject() {
+        this.b_apply.remove();
+        for (let i of this.input) {
+            i.remove();
+        }
+        for (let t of this.texts) {
+            t.remove();
+        }
+    }
+    decideState() {
+        if (keyPressed && key === 'j') {
+            this.deleteObject();
+            return new MenuState();
+        }
+        return this;
     }
 }
 class Srs {
@@ -471,88 +702,32 @@ Srs.Z_I = [new Block(0, 0), new Block(-1, 0), new Block(2, 0), new Block(-1, 0),
 Srs.R_I = [new Block(-1, 0), new Block(0, 0), new Block(0, 0), new Block(0, -1), new Block(0, 2)];
 Srs.T_I = [new Block(-1, -1), new Block(1, -1), new Block(-2, -1), new Block(1, 0), new Block(-2, 0)];
 Srs.L_I = [new Block(0, -1), new Block(0, -1), new Block(0, -1), new Block(0, 1), new Block(0, -2)];
-let game;
-let left_clicking = false;
-let right_clicking = false;
-function mousePressed() {
-    if (mouseButton === LEFT) {
-        left_clicking = true;
-    }
-    if (mouseButton === RIGHT) {
-        right_clicking = true;
-    }
-}
-function mouseReleased() {
-    if (mouseButton === LEFT) {
-        left_clicking = false;
-    }
-    if (mouseButton === RIGHT) {
-        right_clicking = false;
-    }
-}
-function keyPressed() {
-    if (keyCode === 65)
-        game.minoVx = -1;
-    if (keyCode === 68)
-        game.minoVx = 1;
-    if (key === 'n')
-        game.minoVr = -1;
-    if (key === 'm')
-        game.minoVr = 1;
-    if (key === 'w')
-        game.minoHardDrop = true;
-    if (keyCode === 83)
-        game.minoDrop = true;
-    if (key === ' ')
-        game.mino_hold = true;
-}
-function keyReleased() {
-    if (keyCode === 65)
-        game.minoVx = 0;
-    if (keyCode === 68)
-        game.minoVx = 0;
-    if (key === 'n')
-        game.minoVr = 0;
-    if (key === 'm')
-        game.minoVr = 0;
-    if (key === 'w')
-        game.minoHardDrop = false;
-    if (keyCode === 83)
-        game.minoDrop = false;
-    if (key === ' ')
-        game.mino_hold = false;
-}
-function touchStart() {
-    if (mouseX > windowWidth / 2) {
-        game.minoVr = 1;
-    }
-    else {
-        game.minoVr = -1;
-    }
-}
+let state;
 function setup() {
     createCanvas(windowWidth, windowHeight);
     window.addEventListener("touchstart", function (event) { event.preventDefault(); }, { passive: false });
     window.addEventListener("touchmove", function (event) { event.preventDefault(); }, { passive: false });
+    document.oncontextmenu = (e) => {
+        e.preventDefault();
+    };
     Block.size = floor(min(windowWidth, windowHeight) / 30);
     Block.offset_x = Block.size * 5;
     Block.offset_y = Block.size * -15;
-    game = new Game();
-    frameRate(20);
+    state = new MenuState();
 }
-function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
-    Block.size = floor(min(windowWidth, windowHeight) / 30);
-    Block.offset_x = Block.size * 5;
-    Block.offset_y = Block.size * -15;
+function keyPressed() {
+    state.keyPressed();
+}
+function keyReleased() {
+    state.keyReleased();
+}
+function mousePressed() {
+    state.mousePressed();
+}
+function mouseReleased() {
+    state.mouseReleased();
 }
 function draw() {
-    if (left_clicking) {
-        game.field.tiles[floor((mouseY - Block.offset_y) / Block.size)][floor((mouseX - Block.offset_x) / Block.size)] = 8;
-    }
-    if (right_clicking) {
-        game.field.tiles[floor((mouseY - Block.offset_y) / Block.size)][floor((mouseX - Block.offset_x) / Block.size)] = 0;
-    }
-    game.proc();
+    state = state.doState();
 }
 //# sourceMappingURL=../sketch/sketch/build.js.map
