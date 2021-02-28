@@ -41,7 +41,7 @@ class Game {
         y = y ^ (y >> 17);
         return y = y ^ (y << 5);
     }
-    private rng_generate() {
+    protected rng_generate() {
         while (this.minos.length < 12) {
             let bag: number[] = [0, 1, 2, 3, 4, 5, 6];
 
@@ -93,7 +93,65 @@ class Game {
             this.field.cutLine(line);
         }
     }
+    rotate() {
+        if (this.minoVr !== 0) {
+            let futureMino = this.mino.copy();
+            let can_rotate = false;
+            futureMino.rot = (futureMino.rot + this.minoVr + 400) % 4;
 
+            for (let offset = 0; offset <= 5; offset++) { // Blockのx,yの移動分だけ返していく。
+                if (offset === 5) {
+                    futureMino.offset = 0;
+                    break;
+                }
+                let diff: Block = Srs.getRotation(this.mino, futureMino, offset);
+                futureMino.x += diff.x;
+                futureMino.y += diff.y;
+                if (Game.isMinoMovable(futureMino, this.field)) {
+                    this.mino.x = futureMino.x;
+                    this.mino.y = futureMino.y;
+                    can_rotate = true;
+                    break;
+                } else {
+                    futureMino.x = this.mino.x;
+                    futureMino.y = this.mino.y;
+                }
+            }
+            if (can_rotate) {
+                this.mino.rot = (this.mino.rot + this.minoVr + 4000) % 4;
+            } else {
+                this.mino.offset = 0;
+            }
+            // this.mino.offset = 0;
+            this.minoVr = 0;
+        }
+    }
+    move() {
+        if (this.minoVx !== 0) {
+            let futureMino = this.mino.copy();
+            futureMino.x += this.minoVx;
+            if (Game.isMinoMovable(futureMino, this.field)) {
+                this.mino.x += this.minoVx;
+            }
+            // this.minoVx = 0;
+        }
+    }
+    hardDrop() {
+        if (this.minoHardDrop) {
+            let futureMino = this.mino.copy();
+            while (Game.isMinoMovable(futureMino, this.field)) {
+                futureMino.y++;
+            }
+            this.mino.y = futureMino.y - 1;
+            // 接地
+            // 設置処理
+            this.put();
+
+            // 消去
+            this.deleteLine();
+            this.minoHardDrop = false;
+        }
+    }
     proc() {
         // Hold
         if (this.mino_hold) {
@@ -129,63 +187,12 @@ class Game {
             // this.deleteLine();
             // this.minoDrop = false;
         }
-        // ハードドロップ
-        if (this.minoHardDrop) {
-            let futureMino = this.mino.copy();
-            while (Game.isMinoMovable(futureMino, this.field)) {
-                futureMino.y++;
-            }
-            this.mino.y = futureMino.y - 1;
-            // 接地
-            // 設置処理
-            this.put();
-
-            // 消去
-            this.deleteLine();
-            this.minoHardDrop = false;
-        }
-
-        // 左右移動
-        if (this.minoVx !== 0) {
-            let futureMino = this.mino.copy();
-            futureMino.x += this.minoVx;
-            if (Game.isMinoMovable(futureMino, this.field)) {
-                this.mino.x += this.minoVx;
-            }
-            // this.minoVx = 0;
-        }
         // 回転
-        if (this.minoVr !== 0) {
-            let futureMino = this.mino.copy();
-            let can_rotate = false;
-            futureMino.rot = (futureMino.rot + this.minoVr + 400) % 4;
-
-            for (let offset = 0; offset <= 5; offset++) { // Blockのx,yの移動分だけ返していく。
-                if (offset === 5) {
-                    futureMino.offset = 0;
-                    break;
-                }
-                let diff: Block = Srs.getRotation(this.mino, futureMino, offset);
-                futureMino.x += diff.x;
-                futureMino.y += diff.y;
-                if (Game.isMinoMovable(futureMino, this.field)) {
-                    this.mino.x = futureMino.x;
-                    this.mino.y = futureMino.y;
-                    can_rotate = true;
-                    break;
-                } else {
-                    futureMino.x = this.mino.x;
-                    futureMino.y = this.mino.y;
-                }
-            }
-            if (can_rotate) {
-                this.mino.rot = (this.mino.rot + this.minoVr + 4000) % 4;
-            } else {
-                this.mino.offset = 0;
-            }
-            // this.mino.offset = 0;
-            this.minoVr = 0;
-        }
+        this.rotate();
+        // ハードドロップ
+        this.hardDrop();
+        // 左右移動
+        this.move();
 
         // 描画
         background(64);

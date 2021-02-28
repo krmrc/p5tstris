@@ -2,11 +2,11 @@ class Srs {
     static readonly Z: Block[] = [new Block(0, 0), new Block(0, 0), new Block(0, 0), new Block(0, 0), new Block(0, 0)];
     static readonly R: Block[] = [new Block(0, 0), new Block(1, 0), new Block(1, 1), new Block(0, -2), new Block(1, -2)];
     static readonly T: Block[] = [new Block(0, 0), new Block(0, 0), new Block(0, 0), new Block(0, 0), new Block(0, 0)];
-    static readonly L: Block[] = [new Block(0, 0), new Block(-1, 0), new Block(-1, 1), new Block(0, -2), new Block(-1, -2)];
+    static readonly L: Block[] = [new Block(0, 0), new Block(-1, 0), new Block(-1, 1), new Block(0, 1), new Block(0, 1), new Block(0, 1), new Block(0, 1), new Block(0, -2), new Block(-1, -2)];
 
-    static readonly R_O: Block[] = [new Block(0, 1)];
-    static readonly T_O: Block[] = [new Block(-1, 1)];
-    static readonly L_O: Block[] = [new Block(-1, 0)];
+    static readonly R_O: Block[] = [new Block(0, 1), new Block(0, 1), new Block(0, 1), new Block(0, 1), new Block(0, 1)];
+    static readonly T_O: Block[] = [new Block(-1, 1), new Block(0, 1), new Block(0, 1), new Block(0, 1), new Block(0, 1)];
+    static readonly L_O: Block[] = [new Block(-1, 0), new Block(-1, 0), new Block(-1, 0), new Block(-1, 0), new Block(-1, 0)];
 
     static readonly Z_I: Block[] = [new Block(0, 0), new Block(-1, 0), new Block(2, 0), new Block(-1, 0), new Block(2, 0)];
     static readonly R_I: Block[] = [new Block(-1, 0), new Block(0, 0), new Block(0, 0), new Block(0, -1), new Block(0, 2)];
