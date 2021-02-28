@@ -78,94 +78,6 @@ class Block {
 Block.size = 20;
 Block.offset_x = Block.size * 5;
 Block.offset_y = -Block.size * 15;
-class Field {
-    constructor() {
-        this.tiles = [
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
-            [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8],
-            [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8],
-        ];
-    }
-    tileAt(x, y) {
-        if (x < 0 || x >= 12 || y < 0 || y >= 42)
-            return 8;
-        return this.tiles[y][x];
-    }
-    putBlock(x, y, kind) {
-        this.tiles[y][x] = kind;
-    }
-    findLineFilled() {
-        for (let y = 0; y < 40; y++) {
-            let isFilled = this.tiles[y].every(t => t !== 0);
-            if (isFilled)
-                return y;
-        }
-        return -1;
-    }
-    cutLine(y) {
-        this.tiles.splice(y, 1);
-        this.tiles.unshift([8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8]);
-    }
-    draw() {
-        for (let y = 20; y < 41; y++) {
-            for (let x = 1; x < 13; x++) {
-                push();
-                fill(Block.getColor(this.tileAt(x, y)));
-                new Block(x, y).draw();
-                pop();
-            }
-        }
-    }
-    toString() {
-        let s = '';
-        for (let y = 0; y < 42; y++) {
-            for (let x = 0; x < 14; x++) {
-                s += Block.getMinoName(this.tileAt(x, y));
-            }
-            s += '\n';
-        }
-        return s;
-    }
-}
 class Game {
     constructor(rng) {
         this.minoVx = 0;
@@ -239,49 +151,7 @@ class Game {
             this.field.cutLine(line);
         }
     }
-    proc() {
-        if (this.mino_hold) {
-            if (!this.holded) {
-                if (this.hold === null) {
-                    this.hold = this.mino.shape;
-                    this.mino = this.minos.shift();
-                    this.rng_generate();
-                }
-                else {
-                    let tmp = new Mino(0, 0, 0, this.mino.shape);
-                    this.mino = new Mino(6, 20, 0, this.hold);
-                    this.hold = tmp.shape;
-                }
-                this.holded = true;
-            }
-            this.mino_hold = false;
-        }
-        if (this.minoDrop) {
-            let futureMino = this.mino.copy();
-            futureMino.y += 1;
-            if (Game.isMinoMovable(futureMino, this.field)) {
-                this.mino.y += 1;
-            }
-            else {
-            }
-        }
-        if (this.minoHardDrop) {
-            let futureMino = this.mino.copy();
-            while (Game.isMinoMovable(futureMino, this.field)) {
-                futureMino.y++;
-            }
-            this.mino.y = futureMino.y - 1;
-            this.put();
-            this.deleteLine();
-            this.minoHardDrop = false;
-        }
-        if (this.minoVx !== 0) {
-            let futureMino = this.mino.copy();
-            futureMino.x += this.minoVx;
-            if (Game.isMinoMovable(futureMino, this.field)) {
-                this.mino.x += this.minoVx;
-            }
-        }
+    rotate() {
         if (this.minoVr !== 0) {
             let futureMino = this.mino.copy();
             let can_rotate = false;
@@ -313,6 +183,57 @@ class Game {
             }
             this.minoVr = 0;
         }
+    }
+    move() {
+        if (this.minoVx !== 0) {
+            let futureMino = this.mino.copy();
+            futureMino.x += this.minoVx;
+            if (Game.isMinoMovable(futureMino, this.field)) {
+                this.mino.x += this.minoVx;
+            }
+        }
+    }
+    hardDrop() {
+        if (this.minoHardDrop) {
+            let futureMino = this.mino.copy();
+            while (Game.isMinoMovable(futureMino, this.field)) {
+                futureMino.y++;
+            }
+            this.mino.y = futureMino.y - 1;
+            this.put();
+            this.deleteLine();
+            this.minoHardDrop = false;
+        }
+    }
+    proc() {
+        if (this.mino_hold) {
+            if (!this.holded) {
+                if (this.hold === null) {
+                    this.hold = this.mino.shape;
+                    this.mino = this.minos.shift();
+                    this.rng_generate();
+                }
+                else {
+                    let tmp = new Mino(0, 0, 0, this.mino.shape);
+                    this.mino = new Mino(6, 20, 0, this.hold);
+                    this.hold = tmp.shape;
+                }
+                this.holded = true;
+            }
+            this.mino_hold = false;
+        }
+        if (this.minoDrop) {
+            let futureMino = this.mino.copy();
+            futureMino.y += 1;
+            if (Game.isMinoMovable(futureMino, this.field)) {
+                this.mino.y += 1;
+            }
+            else {
+            }
+        }
+        this.rotate();
+        this.hardDrop();
+        this.move();
         background(64);
         this.field.draw();
         this.mino.draw();
@@ -322,6 +243,225 @@ class Game {
     }
 }
 Game.VISIBLE_NEXT = 5;
+class Bot extends Game {
+    constructor(rng) {
+        super();
+        this.order = new Array();
+        this.p_field = new Field();
+        this.p_minos = new Array();
+        this.p_mino = this.p_minos.shift();
+    }
+    move() {
+        if (this.minoVx !== 0) {
+            let futureMino = this.mino.copy();
+            futureMino.x += this.minoVx;
+            if (Game.isMinoMovable(futureMino, this.field)) {
+                this.mino.x += this.minoVx;
+            }
+            this.minoVx = 0;
+        }
+    }
+    undo(r) {
+        for (let y = 0; y < 42; y++) {
+            for (let x = 0; x < 14; x++) {
+                this.field.tiles[y][x] = this.p_field.tiles[y][x];
+            }
+        }
+        this.minos = new Array();
+        for (let m of this.p_minos) {
+            this.minos.push(m.copy());
+        }
+        if (r) {
+            this.mino = new Mino(6, 20, (r + 400) % 4, this.p_mino.shape);
+        }
+        else {
+            this.mino = new Mino(6, 20, 0, this.p_mino.shape);
+        }
+    }
+    getColumnMinHeight(c) {
+        for (let i = 0; i < 40; i++) {
+            if (this.field.tiles[i][c] != 0) {
+                return i;
+            }
+        }
+        return 40;
+    }
+    getHeightAverage() {
+        let height_sum = 0;
+        for (let i = 2; i < 12; i++) {
+            height_sum += this.getColumnMinHeight(i);
+        }
+        let average = height_sum / 10;
+        return average;
+    }
+    getMinHeight() {
+        let max = 40;
+        for (let i = 40; i > 0; i--) {
+            for (let j = 2; j < 11; j++) {
+                if (this.field.tiles[i][j] != 0) {
+                    max = i;
+                }
+            }
+        }
+        return max;
+    }
+    getMaxHeight() {
+        for (let i = 0; i < 40; i++) {
+            for (let j = 2; j < 12; j++) {
+                if (this.field.tiles[i][j] != 0) {
+                    return i;
+                }
+            }
+        }
+        return 40;
+    }
+    hensa2() {
+        let hensa2 = 0.0;
+        for (let i = 2; i < 12; i++) {
+            hensa2 += pow((this.getColumnMinHeight(i) - this.getHeightAverage()), 2);
+        }
+        return hensa2;
+    }
+    calcScore() {
+        const score = this.getMaxHeight() - 10 * sqrt(this.hensa2());
+        console.log(score);
+        return score;
+    }
+    makeDecision() {
+        for (let y = 0; y < 42; y++) {
+            for (let x = 0; x < 14; x++) {
+                this.p_field.tiles[y][x] = this.field.tiles[y][x];
+            }
+        }
+        this.p_mino = new Mino(6, 20, 0, this.mino.shape);
+        this.p_minos.splice(0);
+        for (let m of this.minos) {
+            this.p_minos.push(m.copy());
+        }
+        let max_score = -99999;
+        for (let r = -1; r < 3; r++) {
+            if (r === 0) {
+            }
+            else if (r === 1) {
+                this.minoVr = 1;
+                this.rotate();
+            }
+            else if (r === 2) {
+                this.minoVr = 1;
+                this.rotate();
+                this.minoVr = 1;
+                this.rotate();
+            }
+            else {
+                this.minoVr = -1;
+                this.rotate();
+            }
+            for (let i = 2; i < 12; i++) {
+                if (i <= 6) {
+                    for (let j = 0; j < 6 - i; j++) {
+                        this.minoVx = -1;
+                        this.move();
+                    }
+                }
+                else {
+                    for (let j = 0; j < i - 6; j++) {
+                        this.minoVx = 1;
+                        this.move();
+                    }
+                }
+                this.hardDrop();
+                let now_score = this.calcScore();
+                if (max_score < now_score) {
+                    max_score = now_score;
+                    this.order.splice(0);
+                    if (r === 0) {
+                    }
+                    else if (r === 1) {
+                        this.order.push(32);
+                    }
+                    else if (r === 2) {
+                        this.order.push(32);
+                        this.order.push(32);
+                    }
+                    else {
+                        this.order.push(16);
+                    }
+                    if (i <= 6) {
+                        for (let j = 0; j < 6 - i; j++) {
+                            this.order.push(1);
+                        }
+                    }
+                    else {
+                        for (let j = 0; j < i - 6; j++) {
+                            this.order.push(2);
+                        }
+                    }
+                    this.order.push(8);
+                }
+                this.undo(r);
+            }
+            this.undo();
+        }
+        this.undo();
+    }
+    proc() {
+        if (this.mino_hold) {
+            if (!this.holded) {
+                if (this.hold === null) {
+                    this.hold = this.mino.shape;
+                    this.mino = this.minos.shift();
+                    this.rng_generate();
+                }
+                else {
+                    let tmp = new Mino(0, 0, 0, this.mino.shape);
+                    this.mino = new Mino(6, 20, 0, this.hold);
+                    this.hold = tmp.shape;
+                }
+                this.holded = true;
+            }
+            this.mino_hold = false;
+        }
+        if (this.minoDrop) {
+            let futureMino = this.mino.copy();
+            futureMino.y += 1;
+            if (Game.isMinoMovable(futureMino, this.field)) {
+                this.mino.y += 1;
+            }
+            else {
+            }
+        }
+        if (this.order.length === 0) {
+            this.makeDecision();
+        }
+        else {
+            let o = this.order.shift();
+            if (o === 1) {
+                this.minoVx = -1;
+            }
+            else if (o === 2) {
+                this.minoVx = 1;
+            }
+            else if (o === 16) {
+                this.minoVr = -1;
+            }
+            else if (o === 32) {
+                this.minoVr = 1;
+            }
+            else if (o === 8) {
+                this.minoHardDrop = true;
+            }
+        }
+        this.rotate();
+        this.hardDrop();
+        this.move();
+        background(64);
+        this.field.draw();
+        this.mino.draw();
+        this.drawNexts();
+        this.drawHold();
+        this.fc++;
+    }
+}
 class State {
     constructor() {
     }
@@ -434,12 +574,121 @@ class GameState extends State {
         return this;
     }
 }
+class BotState extends GameState {
+    constructor() {
+        super();
+        this.game = new Bot();
+    }
+    drawState() {
+        try {
+            if (this.left_clicking) {
+                this.game.field.tiles[floor((mouseY - Block.offset_y) / Block.size)][floor((mouseX - Block.offset_x) / Block.size)] = 8;
+            }
+            if (this.right_clicking) {
+                this.game.field.tiles[floor((mouseY - Block.offset_y) / Block.size)][floor((mouseX - Block.offset_x) / Block.size)] = 0;
+            }
+        }
+        catch (error) {
+        }
+        finally {
+            this.game.proc();
+        }
+    }
+}
+class Field {
+    constructor() {
+        this.tiles = [
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8],
+            [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8],
+            [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8],
+        ];
+    }
+    tileAt(x, y) {
+        if (x < 0 || x >= 12 || y < 0 || y >= 42)
+            return 8;
+        return this.tiles[y][x];
+    }
+    putBlock(x, y, kind) {
+        this.tiles[y][x] = kind;
+    }
+    findLineFilled() {
+        for (let y = 0; y < 40; y++) {
+            let isFilled = this.tiles[y].every(t => t !== 0);
+            if (isFilled)
+                return y;
+        }
+        return -1;
+    }
+    cutLine(y) {
+        this.tiles.splice(y, 1);
+        this.tiles.unshift([8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8]);
+    }
+    draw() {
+        for (let y = 20; y < 41; y++) {
+            for (let x = 1; x < 13; x++) {
+                push();
+                fill(Block.getColor(this.tileAt(x, y)));
+                new Block(x, y).draw();
+                pop();
+            }
+        }
+    }
+    toString() {
+        let s = '';
+        for (let y = 0; y < 42; y++) {
+            for (let x = 0; x < 14; x++) {
+                s += Block.getMinoName(this.tileAt(x, y));
+            }
+            s += '\n';
+        }
+        return s;
+    }
+}
 class MenuState extends State {
     constructor() {
         super();
         this.nextState = 0;
         this.b_game = createButton("GAME");
-        this.b_game.position((windowWidth / 2), (windowHeight / 2) - 100);
+        this.b_game.position((windowWidth / 2), (windowHeight / 2) - 150);
         this.b_game.mousePressed(() => this.makeGame());
         this.b_game.style("font-family", "Anton");
         this.b_game.style("background-color", "#FF5000");
@@ -448,8 +697,18 @@ class MenuState extends State {
         this.b_game.style("padding", "24px");
         this.b_game.size(200, 100);
         this.b_game.center('horizontal');
+        this.b_bot = createButton("BOT");
+        this.b_bot.position((windowWidth / 2), (windowHeight / 2) - 50);
+        this.b_bot.mousePressed(() => this.makeBot());
+        this.b_bot.style("font-family", "Anton");
+        this.b_bot.style("background-color", "#FF5000");
+        this.b_bot.style("color", "#FFFFFF");
+        this.b_bot.style("font-size", "24pt");
+        this.b_bot.style("padding", "24px");
+        this.b_bot.size(200, 100);
+        this.b_bot.center('horizontal');
         this.b_setting = createButton("OPTION");
-        this.b_setting.position(windowWidth / 2, (windowHeight / 2) + 100);
+        this.b_setting.position(windowWidth / 2, (windowHeight / 2) + 150);
         this.b_setting.mousePressed(() => this.makeSetting());
         this.b_setting.style("font-family", "Anton");
         this.b_setting.style("background-color", "#FF5000");
@@ -473,23 +732,39 @@ class MenuState extends State {
     makeGame() {
         this.nextState = 1;
         this.b_game.remove();
+        this.b_bot.remove();
+        this.b_setting.remove();
+    }
+    makeBot() {
+        this.nextState = 3;
+        this.b_game.remove();
+        this.b_bot.remove();
         this.b_setting.remove();
     }
     makeSetting() {
         this.nextState = 2;
         this.b_game.remove();
+        this.b_bot.remove();
         this.b_setting.remove();
     }
     decideState() {
         if (keyPressed && key === 'k' || this.nextState === 1) {
             this.b_game.remove();
             this.b_setting.remove();
+            this.b_bot.remove();
             return new GameState();
         }
         if (keyPressed && key === 'l' || this.nextState === 2) {
             this.b_game.remove();
             this.b_setting.remove();
+            this.b_bot.remove();
             return new OptionState();
+        }
+        if (keyPressed && key === ';' || this.nextState === 3) {
+            this.b_game.remove();
+            this.b_setting.remove();
+            this.b_bot.remove();
+            return new BotState();
         }
         return this;
     }
@@ -694,10 +969,10 @@ class Srs {
 Srs.Z = [new Block(0, 0), new Block(0, 0), new Block(0, 0), new Block(0, 0), new Block(0, 0)];
 Srs.R = [new Block(0, 0), new Block(1, 0), new Block(1, 1), new Block(0, -2), new Block(1, -2)];
 Srs.T = [new Block(0, 0), new Block(0, 0), new Block(0, 0), new Block(0, 0), new Block(0, 0)];
-Srs.L = [new Block(0, 0), new Block(-1, 0), new Block(-1, 1), new Block(0, -2), new Block(-1, -2)];
-Srs.R_O = [new Block(0, 1)];
-Srs.T_O = [new Block(-1, 1)];
-Srs.L_O = [new Block(-1, 0)];
+Srs.L = [new Block(0, 0), new Block(-1, 0), new Block(-1, 1), new Block(0, 1), new Block(0, 1), new Block(0, 1), new Block(0, 1), new Block(0, -2), new Block(-1, -2)];
+Srs.R_O = [new Block(0, 1), new Block(0, 1), new Block(0, 1), new Block(0, 1), new Block(0, 1)];
+Srs.T_O = [new Block(-1, 1), new Block(0, 1), new Block(0, 1), new Block(0, 1), new Block(0, 1)];
+Srs.L_O = [new Block(-1, 0), new Block(-1, 0), new Block(-1, 0), new Block(-1, 0), new Block(-1, 0)];
 Srs.Z_I = [new Block(0, 0), new Block(-1, 0), new Block(2, 0), new Block(-1, 0), new Block(2, 0)];
 Srs.R_I = [new Block(-1, 0), new Block(0, 0), new Block(0, 0), new Block(0, -1), new Block(0, 2)];
 Srs.T_I = [new Block(-1, -1), new Block(1, -1), new Block(-2, -1), new Block(1, 0), new Block(-2, 0)];
